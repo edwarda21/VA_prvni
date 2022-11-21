@@ -73,10 +73,11 @@ for i in word:
     if i in "aeiou":
         vowels += 1
     elif i in "qzxswdcvfrtgnhyjmklp":
-        consonants +=1
+        consonants += 1
     elif isinstance(i, int):
         numbers += 1
     else:
         symbols += 1
         print(i)
-print(f"In the string {word} there are {vowels} vowels, {consonants} consonants, {numbers} numbers and {symbols} other symbols")
+print(
+    f"In the string {word} there are {vowels} vowels, {consonants} consonants, {numbers} numbers and {symbols} other symbols")
