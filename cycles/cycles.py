@@ -62,6 +62,7 @@ def circle(radius):  # task 7
         print("#"*radius)
     #nedostatek mozkove kapacity ve 22:20 :D
 
+
 def chess_board_fixed(side):  # task 8
     char_dict = {1:"#",-1:"."}
     current_char = 1
