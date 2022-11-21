@@ -58,8 +58,9 @@ def diamond(side):  # task 6
 
 
 def circle(radius):  # task 7
-    pass
-
+    for i in range(radius):
+        print("#"*radius)
+    #nedostatek mozkove kapacity ve 22:20 :D
 
 def chess_board_fixed(side):  # task 8
     char_dict = {1:"#",-1:"."}
@@ -70,10 +71,10 @@ def chess_board_fixed(side):  # task 8
             row += char_dict[current_char]
             current_char *= -1
         print(row)
-        current_char *= -1
+        if(side%2==0): current_char *= -1
         
         
-def chess_board_resizable(side, space_size):
+def chess_board_resizable(side, space_size):  # task 9
     char_dict = {1:"#",-1:"."}
     current_char = 1
     for i in range(side):  # loop through number of rows
@@ -82,10 +83,10 @@ def chess_board_resizable(side, space_size):
             row += char_dict[current_char]*space_size
             current_char *= -1
         print("\n".join([row]*space_size))
-        current_char *= -1
+        if(side%2==0): current_char *= -1
         
         
-n = 10       
+n = 11       
 m = 5        
 
 square(n)
@@ -99,6 +100,8 @@ print("-"*20)
 cross(n)
 print("-"*20)
 diamond(n)
+print("-"*20)
+circle(n)
 print("-"*20)
 chess_board_fixed(n)
 print("-"*20)
