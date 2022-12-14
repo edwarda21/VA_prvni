@@ -1,4 +1,5 @@
 import random
+import sys
 
 # define a function using the def keyword
 # example: function to calculate the area of a square or rectangle
@@ -24,7 +25,7 @@ def fib(n, memo):
         return memo[n]
 
 
-for i in range(1000000):
+for i in range(100000):
     print(fib(i, fib_memo))
 
 

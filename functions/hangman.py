@@ -25,6 +25,8 @@ words = [
     "capitalize"
 ]
 word = list(random.choice(words))
+word_list = [letter for letter in word]
+print(word_list)
 # get length of word
 word_len = len(word)
 letters_to_guess = set(word)
@@ -50,6 +52,7 @@ while play:
                 print(f'''Sorry, {letter} is not in the word.
                 You have {health} tries remaining''')
         else:
-            for letter in
+            for letter in word:
+                print(letter)
 
 
