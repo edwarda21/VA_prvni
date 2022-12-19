@@ -15,21 +15,23 @@ Steps:
 guessed_letters = []
 wrongly_guessed_letters = []
 difficulties_threshold = {"e": [0, 5], "m": [4, 8], "h": [7, 15]}  # sets the threshold for word length in each
-health_values = {"e":4,"m":5,"h":7}
+health_values = {"e": 4, "m": 7, "h": 9}
 with open("words.txt", "r") as f:
     words = f.readlines()
+# TODO: create loop for multiple games
 while True:
     difficulty = input('''What difficulty do you want to choose?
         (E)asy => Word is less than 5 letters long
         (M)edium => Word length is between 5 and 8 letters
         (H)ard => Word is 8 or more letters long\n =>''').lower().strip()
-    if difficulty not in ["e","m","h"]:
+    if difficulty not in ["e", "m", "h"]:
         continue
     else:
         while True:
             if len(difficulty) > 0:
                 word = random.choice(words).strip("\n")
-                if (difficulty[0] in ["e","m","h"]) and difficulties_threshold[difficulty][0] < len(word) < difficulties_threshold[difficulty][1]:
+                if (difficulty[0] in ["e", "m", "h"]) and difficulties_threshold[difficulty][0] < len(word) < \
+                        difficulties_threshold[difficulty][1]:
                     break
                 elif difficulty[0] == "h" and len(word) >= 8:
                     break
@@ -47,8 +49,9 @@ letters_to_guess = set(word)
 user_guess = ["_" for i in range(word_len)]
 print(f'''
 The word you are guessing is {word_len} letters long.
-{''.join(user_guess)}
+You start with {health} guesses
 ''')
+# TODO: optimize and reduce reduntant code
 while True:  # creates the game loop
     print("Wrong guesses: ", ",".join(wrongly_guessed_letters))
     print("".join(word_list))  # shows player their progress throughout the word
@@ -63,9 +66,6 @@ while True:  # creates the game loop
             if health == 0:
                 print(f"Sorry you lose, the word was {word}")
                 break
-            elif letter in wrongly_guessed_letters:
-                print(f'''You already guessed {letter} and it is still wrong!
-                You have {health} tries remaining''')
             else:
                 wrongly_guessed_letters.append(letter)
                 print(f'''Sorry, {letter} is not in the word.
