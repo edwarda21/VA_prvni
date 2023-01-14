@@ -47,3 +47,21 @@ pprint(hand)
 pprint(val_of_hand)
 # deck.remove({"colour":"orange","value":"queen"}) test line to check what error to use in except clause
 # int("J") test line to check what error to check for in except clause
+# create a gameloop to play around with
+while True:
+    while True:
+        h_or_s = input("Do you want to (H)it or (S)tand?")
+        if h_or_s.lower()[0] in ["h", "s"]:
+            break
+    if h_or_s == "s":
+        break
+    hand, val_of_hand = draw_card(deck, val_of_hand, hand)
+    if val_of_hand > 21:
+        for i in hand:
+            if i["value"] == "A":
+                val_of_hand -= 10
+                break
+        print(f"Sorry, you have gone bust your final hand is {hand}")
+        break
+    print(f"The value of your hand is {val_of_hand}")
+    print(f"Your cards are {hand}")
