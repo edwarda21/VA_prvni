@@ -10,7 +10,7 @@ def calculate_area(a, b=None):
 
 
 print(calculate_area(a=8))
-
+fib_len = 100000
 fib_memo = {}
 
 
@@ -20,12 +20,11 @@ def fib(n, memo):
     elif n in memo:
         return memo[n]
     else:
-
         memo[n] = fib(n - 1, memo) + fib(n - 2, memo)
         return memo[n]
 
 
-for i in range(100000):
+for i in range(fib_len):
     print(fib(i, fib_memo))
 
 
