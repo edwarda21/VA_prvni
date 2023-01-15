@@ -79,14 +79,10 @@ while True:
             break
     if h_or_s == "s":
         break
-    player1.draw_card(deck)
-    if player1.val_of_hand > 21:
-        for i in player1.hand:
-            if i["value"] == "A":
-                player1.val_of_hand -= 10
-                break
-        print(f"Sorry, you have gone bust your final hand is {player1.hand}")
+    if not player1.draw_card(deck):
+        print(f"You have gone bust, the card you last drew was a {player1.hand[len(player1.hand)-1]}")
         break
+
 dealer.draw_card(deck)
 while True:
     # dealers game
