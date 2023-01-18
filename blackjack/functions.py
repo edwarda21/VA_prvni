@@ -1,5 +1,6 @@
 import random
 
+
 def get_decks(in_number_of_decks):
     values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     colours = ["H", "C", "S", "D"]
@@ -24,12 +25,13 @@ def write_hand(in_hand):
 
 
 class Player:
-    def __init__(self,nick):
+    def __init__(self, nick):
         self.hand = []
         self.count = 0
         self.blackjack = False
         self.bust = False
         self.nick = nick
+        self.bet = None
 
     def get_hand(self, in_deck):
         for x in range(0, 2):
@@ -61,7 +63,19 @@ class Player:
 
         # gets the value of drawn card, if the value is not a number then value is assigned manually, hence try except
         # finally clause there to always check the value of the persons hand see if they are bust or not
+
     def check_blackjack(self):
         if self.count == 21 and len(self.hand) == 2:
             self.blackjack = True
             return True
+
+    def double_down(self, in_deck):
+        if self.bet is None:
+            return False
+        else:
+            self.bet *= 2
+            self.draw_card(in_deck)
+
+    def set_bet(self, bet):
+        self.bet = bet
+        return
