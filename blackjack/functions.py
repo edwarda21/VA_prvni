@@ -3,7 +3,7 @@ import random
 
 def get_decks(in_number_of_decks):
     values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-    colours = ["H", "C", "S", "D"]
+    colours = ["♥", "♣", "♠", "♦"]
     out_deck = []
     for decks in range(0, in_number_of_decks):
         out_deck += [{"value": value, "colour": colour, "type": "soft"} for value in values for colour in colours]
@@ -31,7 +31,8 @@ class Player:
         self.blackjack = False
         self.bust = False
         self.nick = nick
-        self.bet = None
+        self._bet = None
+        self.bet_multiplier = 1
 
     def get_hand(self, in_deck):
         for x in range(0, 2):
@@ -67,6 +68,7 @@ class Player:
     def check_blackjack(self):
         if self.count == 21 and len(self.hand) == 2:
             self.blackjack = True
+            self.bet_multiplier = 1.5
             return True
 
     def double_down(self, in_deck):
@@ -74,8 +76,16 @@ class Player:
             return False
         else:
             self.bet *= 2
-            self.draw_card(in_deck)
+            self.bust = not self.draw_card(in_deck)
+            return False if self.bust else True
 
-    def set_bet(self, bet):
-        self.bet = bet
-        return
+    @property
+    def bet(self):
+        return self._bet
+
+    @bet.setter
+    def bet(self, bet):
+        if bet < 5 or not isinstance(bet, int):
+            raise ValueError("You may not bet less than 5$")
+        else:
+            self._bet = bet
