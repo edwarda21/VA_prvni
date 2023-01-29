@@ -93,14 +93,23 @@ class Player:
             self._bet = bet
 
 
-def create_player():
+def create_player(player_list):
     while True:
         in_name = input(
             '''Well hello player, what will your nickname be? (at least 3 characters long with at least 1 character) \n =>''')
         if len(in_name) >= 3 and not in_name.isspace() and " " not in in_name and re.search('[a-zA-Z]', in_name):
-            break
+            if check_player_exists(in_name,player_list):
+                print("Sorry, this username is already taken, try choosing something else.")
+            else:
+                print(f"That is a great username, welcome {in_name}.")
+                break
         else:
             print("Sorry, your username has to be at least 3 characters long and must not include whitespace")
+
+    player = Player(in_name)
+    add_player(player,player_list)
+    return Player
+
 
 
 def get_players(file):
@@ -121,11 +130,15 @@ def add_player(in_player, player_list):
         print("Sorry, cant add your player, this nick is already taken")
         return False
     else:
-        player_list[in_player.nick] = {"tokens": 80}
+        player_list[in_player.nick] = {"tokens": 5,"won":0,"lost":0}
         return True
+    # creates a new player to the list
 
-def log_in()
-players = get_players("players.json")
-someone = Player("Jeffery")
-add_player(someone, players)
-write_to_json("players.json", players)
+def check_player_exists(name,player_list):
+    if name in player_list:
+        return True
+    return False
+    # checks if a player exists by seeing if there is a key in the players.json
+
+
+
