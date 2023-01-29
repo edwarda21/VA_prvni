@@ -1,4 +1,6 @@
 import random
+import re
+import json
 
 
 def get_decks(in_number_of_decks):
@@ -76,7 +78,6 @@ class Player:
             return False
         else:
             self.bet *= 2
-            self.bust = not self.draw_card(in_deck)
             return False if self.bust else True
 
     @property
@@ -89,3 +90,22 @@ class Player:
             raise ValueError("You may not bet less than 5$")
         else:
             self._bet = bet
+
+
+def create_player():
+    while True:
+        in_name = input('''Well hello player, what will your nickname be? (at least 3 characters long with at least 1 character) \n =>''')
+        if len(in_name) >= 3 and not in_name.isspace() and " " not in in_name and re.search('[a-zA-Z]',in_name):
+            break
+        else:
+            print("Sorry, your username has to be at least 3 characters long and must not include whitespace")
+
+def get_players(file):
+    with open(file) as f:
+        return json.load(f)
+
+def write_to_json(file,content):
+    with open(file,"w+") as f:
+        return f.write(json.dumps(content))
+write_to_json("players.json",["hello",["hi","how ya doia"]])
+print(get_players("players.json"))
