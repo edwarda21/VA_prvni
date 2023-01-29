@@ -35,6 +35,7 @@ class Player:
         self.nick = nick
         self._bet = None
         self.bet_multiplier = 1
+        self.tokens = 0
 
     def get_hand(self, in_deck):
         for x in range(0, 2):
@@ -94,18 +95,37 @@ class Player:
 
 def create_player():
     while True:
-        in_name = input('''Well hello player, what will your nickname be? (at least 3 characters long with at least 1 character) \n =>''')
-        if len(in_name) >= 3 and not in_name.isspace() and " " not in in_name and re.search('[a-zA-Z]',in_name):
+        in_name = input(
+            '''Well hello player, what will your nickname be? (at least 3 characters long with at least 1 character) \n =>''')
+        if len(in_name) >= 3 and not in_name.isspace() and " " not in in_name and re.search('[a-zA-Z]', in_name):
             break
         else:
             print("Sorry, your username has to be at least 3 characters long and must not include whitespace")
 
+
 def get_players(file):
     with open(file) as f:
-        return json.load(f)
+        content = f.read()
 
-def write_to_json(file,content):
-    with open(file,"w+") as f:
-        return f.write(json.dumps(content))
-write_to_json("players.json",["hello",["hi","how ya doia"]])
-print(get_players("players.json"))
+        return json.loads(content) if len(content) > 0 else {}
+
+
+def write_to_json(file, content):
+    content = json.dumps(content)
+    with open(file, "w+") as f:
+        return f.write(content)
+
+
+def add_player(in_player, player_list):
+    if in_player.nick in player_list:
+        print("Sorry, cant add your player, this nick is already taken")
+        return False
+    else:
+        player_list[in_player.nick] = {"tokens": 80}
+        return True
+
+def log_in()
+players = get_players("players.json")
+someone = Player("Jeffery")
+add_player(someone, players)
+write_to_json("players.json", players)
