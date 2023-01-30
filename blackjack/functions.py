@@ -134,7 +134,9 @@ class Player:
         self._tokens = tokens
 
 
-def create_player(player_list):
+def create_player():
+    data_from_file = get_json(PLAYERS_FILE)
+    player_list = {} if not data_from_file else data_from_file
     while True:
         in_name = input(
             '''Well hello player, what will your nickname be? (at least 3 characters long with at least 1 character) 
@@ -150,7 +152,7 @@ def create_player(player_list):
     # runs a loop until the player puts in a valid username that can be saved
     out_player = Player(in_name)
     print(
-        f"Welcome {out_player}! Glad to have you onboard. We have given you {STARTING_TOKENS} tokens as a welcome gift.")
+        f"Welcome {out_player.nick}! Glad to have you onboard. We have given you {STARTING_TOKENS} tokens as a welcome gift.")
     player_list[out_player.nick] = {"tokens": STARTING_TOKENS, "won": 0, "lost": 0, "max": STARTING_TOKENS}
     write_to_json(PLAYERS_FILE, player_list)
     return out_player
@@ -178,7 +180,9 @@ def check_player_exists(name, player_list):
     # checks if a player exists by seeing if there is a key in the players.json
 
 
-def returning_player(player_list):
+def returning_player():
+    file_data = get_json(PLAYERS_FILE)
+    player_list = [] if not file_data else file_data
     while True:
         in_name = input(
             '''Please tell us what your nick is, player. 
@@ -202,13 +206,17 @@ def update_leaderboard(player):
         leaderboard = file_data
     if len(leaderboard) == 0:
         leaderboard.append({"name": player.nick, "tokens": player.max_tokens})
+        write_to_json(LEADERBOARD_FILE, leaderboard)
         return
     for i in range(len(leaderboard)):
         if leaderboard[i]["name"] == player.nick:
             print("hi")
             leaderboard[i]["tokens"] = player.max_tokens
             break
+    print("RUN")
+    write_to_json(LEADERBOARD_FILE,leaderboard)
 
-
-someone = Player("Hiya")
-someone.tokens = 109
+someone = returning_player()
+someone.tokens = 180
+someone.save_info()
+print(someone.tokens)
