@@ -3,6 +3,7 @@ import re
 import json
 
 PLAYERS_FILE = "players.json"
+LEADERBOARD_FILE = "leaderboard.json"
 STARTING_TOKENS = 20
 BASE_TOKENS = 12
 
@@ -39,10 +40,10 @@ class Player:
         self.nick = nick
         self._bet = None
         self.bet_multiplier = 1
-        self.tokens = tokens
+        self.max_tokens = max_tokens
+        self._tokens = tokens
         self.won = won
         self.lost = lost
-        self.max_tokens = max_tokens
 
     def get_hand(self, in_deck):
         for x in range(0, 2):
@@ -93,8 +94,9 @@ class Player:
         current_player["tokens"] = self.tokens
         current_player["won"] = self.won
         current_player["lost"] = self.lost
-        if self.max_tokens > current_player["max"]:
-            current_player["max"] = self.max_tokens
+        if self.tokens > current_player["max"]:
+            current_player["max"] = self.tokens
+            self.max_tokens = self.tokens
         write_to_json(PLAYERS_FILE, list_of_players)
 
     @property
@@ -120,6 +122,17 @@ class Player:
         
         '''
 
+    @property
+    def tokens(self):
+        return self._tokens
+
+    @tokens.setter
+    def tokens(self, tokens):
+        if tokens >= self.max_tokens:
+            self.max_tokens = tokens
+            update_leaderboard(self)
+        self._tokens = tokens
+
 
 def create_player(player_list):
     while True:
@@ -144,11 +157,11 @@ def create_player(player_list):
     # creates a new player instance and automatically saves it to the players file
 
 
-def get_players(file):
+def get_json(file):
     with open(file) as f:
         content = f.read()
-        return json.loads(content) if len(content) > 0 else {}
-    # return the list of players from the players.json file
+        return json.loads(content) if len(content) > 0 else False
+    # return data from the given JSON file
 
 
 def write_to_json(file, content):
@@ -179,3 +192,23 @@ def returning_player(player_list):
         else:
             print("Sorry, there is no player with this nick")
     # checks if the inputted name is from a returning player or not, if not then asks for the nick again
+
+
+def update_leaderboard(player):
+    file_data = get_json(LEADERBOARD_FILE)
+    if not file_data:
+        leaderboard = []
+    else:
+        leaderboard = file_data
+    if len(leaderboard) == 0:
+        leaderboard.append({"name": player.nick, "tokens": player.max_tokens})
+        return
+    for i in range(len(leaderboard)):
+        if leaderboard[i]["name"] == player.nick:
+            print("hi")
+            leaderboard[i]["tokens"] = player.max_tokens
+            break
+
+
+someone = Player("Hiya")
+someone.tokens = 109
