@@ -32,7 +32,7 @@ while running:
     while True:
         action = input()
         match action:
-            case "esc":
+            case "quit":
                 sys.exit("You have quit the game")
             case "1":
                 f.game(player)
@@ -46,8 +46,3 @@ while running:
                 player.write_statistic()
                 running = True
                 break
-
-# while True:
-#     play = input("Do you want to play again? (Y)es or (N)o.")
-#     if len(play) == 0 or play.lower() not in ["y", "n"]:
-#         game = False
