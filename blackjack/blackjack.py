@@ -1,48 +1,51 @@
-from pprint import pprint
 import functions as f
-import keyboard
 import sys
 
-login_menu = '''
+running = True
+login = True
+player = None
+login_menu = "-"*100 + '''
         Welcome player, it seems you are not logged in. What would you like to do?
-        (to choose press the number that the option is presented with or press escape to stop the program)
+        (to choose type the number that the option is presented with or type quit to stop the program)
         1. Log in (I am a returning player)
-        2. Register (I have never played before)'''
+        2. Register (I have never played before)\n'''+"-"*100
 print(login_menu)
-while True:
-    key = keyboard.read_key()
-    if key == "esc":
-        sys.exit("You have quit the game")
-    elif key == "1":
-        player = f.returning_player()
-        break
-    elif key == "2":
-        player = f.create_player()
-        break
-    else:
-        continue
-menu = '''
-        Hello there {player_name}, what would you like to do?
-            (to choose press the number that the option is presented with or press escape to stop the program)
-            1. Play game
-            2. Look at the leaderboard
-            3. Look at your own info
-        '''
-print(menu.format(player_name = player.nick))
-while True:
-    key = keyboard.read_key()
-    match key:
-        case "esc":
+while login:
+    action = input()
+    match action:
+        case "quit":
             sys.exit("You have quit the game")
         case "1":
-            f.game(player)
-            break
+            player = f.returning_player()
+            login = False
         case "2":
-            f.show_leaderboard()
-            break
-        case "3":
-            player.write_statistic()
-            break
+            player = f.create_player()
+            login = False
+menu = "-"*100 + '''
+            Hello there {player_name}, what would you like to do?
+                (to choose type the number that the option is presented with or type quit to stop the program)
+                1. Play game
+                2. Look at the leaderboard
+                3. Look at your own info\n'''+"-"*100
+while running:
+    print(menu.format(player_name=player.nick))
+    while True:
+        action = input()
+        match action:
+            case "esc":
+                sys.exit("You have quit the game")
+            case "1":
+                f.game(player)
+                running = True
+                break
+            case "2":
+                f.show_leaderboard()
+                running = True
+                break
+            case "3":
+                player.write_statistic()
+                running = True
+                break
 
 # while True:
 #     play = input("Do you want to play again? (Y)es or (N)o.")
