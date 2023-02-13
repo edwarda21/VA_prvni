@@ -282,7 +282,6 @@ def game(player, no_of_decks=6):
             player_decision = True
             player_action = None
 
-
             double_down = "or (D)ouble down" if (len(player.hand) == 2 and player.bet <= player.tokens / 2) else ""
             # gives player info on their hand
             print(write_hand(dealer))
@@ -331,25 +330,25 @@ def game(player, no_of_decks=6):
                 dealer_turn = False
                 continue
             # if dealer has count less than 17 they draw a card
-            if dealer.count <= 16:
+            elif dealer.count <= 16:
                 if not dealer.draw_card(deck):
                     print(f"The dealer has gone bust their final hand is\n {write_hand(dealer)}")
                     dealer_turn = False
                     continue
             else:
-                print(f"The dealers final hand is\n {write_hand(dealer)}")
-                print(f"The dealers final hand value is {dealer.count}")
                 dealer_turn = False
                 continue
+        print(f"The dealers final hand is\n {write_hand(dealer)}")
+        print(f"The dealers final hand value is {dealer.count}")
         # evaluate result and ask to play again
         # check for either person bust and add or remove tokens respectively
         if player.bust:
             print("You have lost the game.")
-            player.tokens -= player.bet*player.bet_multiplier
+            player.tokens -= player.bet * player.bet_multiplier
             player.lost += 1
         elif dealer.bust:
             print("Congratulations! You win.")
-            player.tokens += player.bet*player.bet_multiplier
+            player.tokens += player.bet * player.bet_multiplier
             player.won += 1
 
         # checks for draw or win on blackjack
@@ -357,25 +356,25 @@ def game(player, no_of_decks=6):
             if player.blackjack and not dealer.blackjack:
                 print("Congratulations! You win the game with a blackjack.")
                 player.won += 1
-                player.tokens += player.bet*player.bet_multiplier
+                player.tokens += player.bet * player.bet_multiplier
             elif dealer.blackjack and not player.blackjack:
                 print("You have lost the game.")
                 player.lost += 1
-                player.tokens -= player.bet*player.bet_multiplier
+                player.tokens -= player.bet * player.bet_multiplier
             else:
                 print("Unlucky, the game ended in a draw.")
 
         # evaluates rest of options
         elif player.count > dealer.count:
             print("Congratulations! You win.")
-            player.tokens += player.bet*player.bet_multiplier
+            player.tokens += player.bet * player.bet_multiplier
             player.won += 1
         elif player.count == dealer.count:
             print("Unlucky, the game ended in a draw.")
         else:
             print("You have lost the game.")
             player.lost += 1
-            player.tokens -= player.bet*player.bet_multiplier
+            player.tokens -= player.bet * player.bet_multiplier
 
         # give player default 10 tokens if drop to 0
         if player.tokens <= 0:
