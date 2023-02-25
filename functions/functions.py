@@ -10,7 +10,7 @@ def calculate_area(a, b=None):
 
 
 print(calculate_area(a=8))
-fib_len = 100000
+fib_len = 30000
 fib_memo = {}
 
 
