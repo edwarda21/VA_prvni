@@ -49,50 +49,8 @@ class Player:
         self.won = won
         self.lost = lost
 
-    def get_hand(self, in_deck):
-        for x in range(0, 2):
-            self.draw_card(in_deck)
-
-    def draw_card(self, in_deck):
-        card = in_deck.pop()
-        try:
-            self.count += int(card["value"])
-        except ValueError:
-            if card["value"] in ["J", "Q", "K"]:
-                self.count += 10
-            elif self.count + 11 > 21:
-                self.count += 1
-                card["type"] = "hard"
-            else:
-                self.count += 11
-        finally:
-            self.hand.append(card)
-            if self.count > 21:
-                if find_ace(self.hand):
-                    self.count -= 10
-                    return True
-                else:
-                    self.bust = True
-                    return False
-            else:
-                return True
-
         # gets the value of drawn card, if the value is not a number then value is assigned manually, hence try except
         # finally clause there to always check the value of the persons hand see if they are bust or not
-
-    def check_blackjack(self):
-        if self.count == 21 and len(self.hand) == 2:
-            self.blackjack = True
-            self.bet_multiplier = 1.5
-            return True
-
-    def double_down(self, in_deck):
-        if self.bet is None:
-            return False
-        else:
-            self.bet *= 2
-            self.draw_card(in_deck)
-            return False if self.bust else True
 
     def save_info(self):
         list_of_players = get_json(PLAYERS_FILE)
@@ -143,6 +101,58 @@ class Player:
             self.max_tokens = tokens
             update_leaderboard(self)
         self._tokens = tokens
+
+
+class Hand:
+    def __init__(self, bet):
+        self.bet_multiplier = 1
+        self.blackjack = False
+        self.bust = False
+        self.contents = []
+        self.count = 0
+        self.bet = bet
+
+    def get_hand(self, in_deck):
+        for x in range(0, 2):
+            self.draw_card(in_deck)
+
+    def draw_card(self, in_deck):
+        card = in_deck.pop()
+        try:
+            self.count += int(card["value"])
+        except ValueError:
+            if card["value"] in ["J", "Q", "K"]:
+                self.count += 10
+            elif self.count + 11 > 21:
+                self.count += 1
+                card["type"] = "hard"
+            else:
+                self.count += 11
+        finally:
+            self.hand.append(card)
+            if self.count > 21:
+                if find_ace(self.hand):
+                    self.count -= 10
+                    return True
+                else:
+                    self.bust = True
+                    return False
+            else:
+                return True
+
+    def check_blackjack(self):
+        if self.count == 21 and len(self.hand) == 2:
+            self.blackjack = True
+            self.bet_multiplier = 1.5
+            return True
+
+    def double_down(self, in_deck):
+        if self.bet is None:
+            return False
+        else:
+            self.bet *= 2
+            self.draw_card(in_deck)
+            return False if self.bust else True
 
 
 def create_player():
