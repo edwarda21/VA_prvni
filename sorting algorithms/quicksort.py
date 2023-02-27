@@ -1,38 +1,28 @@
 def partition(to_sort):
-    print("Partition no. ", partition.counter)
-    partition.run = 1
-    partition.counter += 1
     pivot = to_sort[0]
-    left = 1
+    left = 0
     right = len(to_sort) - 1
-    print("Pivot", pivot)
     while left < right:
-        print(f"Partition run No. {partition.run}")
-        print("List:", to_sort)
-        partition.run +=1
-        while to_sort[left] < pivot:
+        while to_sort[left] <= pivot and left < len(to_sort) - 1:
             left += 1
-        while to_sort[right] > pivot:
+        while to_sort[right] > pivot and right > 0:
             right -= 1
         if left < right:
             to_sort[left], to_sort[right] = to_sort[right], to_sort[left]
-    to_sort[0],to_sort[right] = to_sort[right],pivot
-    print("End of partition:")
-    print(to_sort)
-    return to_sort[:right], to_sort[left+1:], [to_sort[right]]
-
-
-partition.counter = 1
-partition.run = 1
+    to_sort[0], to_sort[right] = to_sort[right], pivot
+    return right
 
 
 def quicksort(to_sort):
-    print("QS")
-    if len(to_sort) == 1:
+    if len(to_sort) < 2:
         return to_sort
     else:
-        left, right, pivot = partition(to_sort)
-        return quicksort(left) + pivot + quicksort(right)
+        pivot_index = partition(to_sort)
+        return quicksort(to_sort[:pivot_index]) + [to_sort[pivot_index]] + quicksort(to_sort[pivot_index + 1:])
 
 
-print(quicksort([8, 849, 48, 1, 7, 97, 0, 54, 48, 23, 12]))
+print(quicksort([8, 849, 48, 1, 7, 97, 0, 54, 23, 12, 69]))
+
+print(quicksort(
+    [64, 8, 12, 53, 110, 1, 99, 405, 802, 77, 83, 65, 22, 11, 111, 1111, 9, .8, 8, 8, 8, 64, 64, 69, 69, 5, -69420363,
+     69.420636]))
