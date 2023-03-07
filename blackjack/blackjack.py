@@ -12,15 +12,16 @@ login_menu = "-"*100 + '''
 print(login_menu)
 while login:
     action = input()
-    match action:
-        case "quit":
-            sys.exit("You have quit the game")
-        case "1":
-            player = f.returning_player()
-            login = False
-        case "2":
-            player = f.create_player()
-            login = False
+    if action  == "quit":
+        sys.exit("You have quit the game")
+    elif action == "1":
+        player = f.returning_player()
+        login = False
+    elif action ==  "2":
+        player = f.create_player()
+        login = False
+    else:
+        continue
 menu = "-"*100 + '''
             Hello there {player_name}, what would you like to do?
                 (to choose type the number that the option is presented with or type quit to stop the program)
@@ -31,18 +32,20 @@ while running:
     print(menu.format(player_name=player.nick))
     while True:
         action = input()
-        match action:
-            case "quit":
-                sys.exit("You have quit the game")
-            case "1":
-                f.game(player)
-                running = True
-                break
-            case "2":
-                f.show_leaderboard()
-                running = True
-                break
-            case "3":
-                player.write_statistic()
-                running = True
-                break
+
+        if action ==  "quit":
+            sys.exit("You have quit the game")
+        elif action == "1":
+            f.game(player)
+            running = True
+            break
+        elif action == "2":
+            f.show_leaderboard()
+            running = True
+            break
+        elif action ==  "3":
+            player.write_statistic()
+            running = True
+            break
+        else:
+            continue
