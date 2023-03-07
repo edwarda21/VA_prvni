@@ -277,15 +277,6 @@ def game(player, no_of_decks=6):
     # main game loop, is broken if person doesn't want to play again
     playing = True
     while playing:
-        # set hand for player
-        player.hands = []
-        player.get_hand(deck)
-        # set hand for dealer
-        dealer.hands = []
-        dealer_hand = Hand(dealer)
-        dealer_hand.draw_card(deck)
-        dealer.hands.append(dealer_hand)
-        dealer_hand = dealer.hands[0]
         # sets turn loops to true and gets cards for the dealer and player
         dealer_turn = True
 
@@ -298,14 +289,27 @@ def game(player, no_of_decks=6):
                 break
             except ValueError as e:
                 print(e)
+        # set hand for player
+        player.hands = []
+        player.get_hand(deck)
+        # set hand for dealer
+        dealer.hands = []
+        dealer_hand = Hand(dealer)
+        dealer_hand.draw_card(deck)
+        dealer.hands.append(dealer_hand)
+        dealer_hand = dealer.hands[0]
         # starts players turn
-        for hand in player.hands:
+        #TODO: fix what hands are getting currently played, maybe by breaking for loop that is withing a while loop
+        for i, hand in enumerate(player.hands):
+            print(player.hands)
+            print(f"CURRENT: {hand}\n index:{i}")
             turn = True
             while turn:
                 player_decision = True
                 player_action = None
 
-                double_down = "or (D)ouble down" if (len(hand.contents) == 2 and player.bet <= player.tokens / 2) else ""
+                double_down = "or (D)ouble down" if (
+                            len(hand.contents) == 2 and player.bet <= player.tokens / 2) else ""
                 split = "or s(P)lit" if (len(hand.contents) == 2) else ""
                 # gives player info on their hand
                 print(write_hand(dealer))
@@ -320,7 +324,8 @@ def game(player, no_of_decks=6):
                 # get player action, if it is one of the actions allowed continue on, otherwise keep asking for action
                 while player_decision:
                     player_action = input(f"Do you want to (H)it, (S)tand {double_down} {split}?\n =>")
-                    if len(player_action) > 0 and player_action.lower()[0] in ["h", "s", "d" if double_down else None, "p" if split else None]:
+                    if len(player_action) > 0 and player_action.lower()[0] in ["h", "s", "d" if double_down else None,
+                                                                               "p" if split else None]:
                         player_decision = False
                 # evaluate player actions
                 if player_action == "s":
