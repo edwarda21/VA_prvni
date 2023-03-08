@@ -1,6 +1,7 @@
 import random
 import re
 import json
+import os
 
 PLAYERS_FILE = "players.json"
 LEADERBOARD_FILE = "leaderboard.json"
@@ -205,7 +206,9 @@ def get_json(file):
                 return output
             except json.decoder.JSONDecodeError:
                 raise IOError("There is a problem with the files. Please fix me")
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print(e)
+        print(os.getcwd())
         return False
     # return data from the given JSON file
 
