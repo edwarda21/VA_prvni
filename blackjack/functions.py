@@ -120,6 +120,7 @@ class Hand:
         self.count = 0
         self.bet = bet
         self.parent_player = player
+        self.parent_player.tokens -= self.bet
 
     def draw_card(self, in_deck):
         card = in_deck.pop()
@@ -141,6 +142,10 @@ class Hand:
                     return True
                 else:
                     self.bust = True
+                    print(f"Sorry, you have gone bust, you have lost {self.bet*self.bet_multiplier}")
+                    print(f"The card you last drew was a {self.contents[-1]['value']}")
+                    self.parent_player.lost += 1
+                    self.parent_player.hands.remove(self)
                     return False
             else:
                 return True
@@ -155,7 +160,8 @@ class Hand:
         if self.bet is None:
             return False
         else:
-            self.bet *= 2
+            self.bet_multiplier *= 2
+            self.parent_player.tokens -= self.bet
             self.draw_card(in_deck)
             return False if self.bust else True
 
@@ -302,7 +308,7 @@ def game(player, no_of_decks=6):
         dealer.hands.append(dealer_hand)
         dealer_hand = dealer.hands[0]
         # starts players turn
-        #TODO: fix what hands are getting currently played, maybe by breaking for loop that is withing a while loop
+        # TODO: fix what hands are getting currently played, maybe by breaking for loop that is withing a while loop
         for i, hand in enumerate(player.hands):
             print(player.hands)
             print(f"CURRENT: {hand}\n index:{i}")
@@ -312,7 +318,7 @@ def game(player, no_of_decks=6):
                 player_action = None
 
                 double_down = "or (D)ouble down" if (
-                            len(hand.contents) == 2 and player.bet <= player.tokens / 2) else ""
+                        len(hand.contents) == 2 and player.bet <= player.tokens / 2) else ""
                 split = "or s(P)lit" if (len(hand.contents) == 2) else ""
                 # gives player info on their hand
                 print(write_hand(dealer))
@@ -337,10 +343,7 @@ def game(player, no_of_decks=6):
                 elif player_action == "d":
                     # if player doubles down, and they go bust they lose and lose their bet respectively otherwise they
                     # go on
-                    if not hand.double_down(deck):
-                        print(
-                            f"You have gone bust on your double down, the card you drew was a {hand[-1]['value']}")
-                    else:
+                    if hand.double_down(deck):
                         print(f"Your double down card is a {hand[-1]['value']}")
                     turn = False
                     continue
@@ -349,7 +352,7 @@ def game(player, no_of_decks=6):
                     turn = False
                 elif not hand.draw_card(deck):
                     # last possible option of action, checks if player has gone bust
-                    print(f"You have gone bust, the card you last drew was a {hand.hand[-1]['value']}")
+                    # the draw card function automatically tells the player the hand has gone bust and removes the hand
                     turn = False
                     continue
                 else:
@@ -374,16 +377,13 @@ def game(player, no_of_decks=6):
                 dealer_turn = False
                 continue
         print(f"The dealers final hand is\n {write_hand(dealer)}")
-        print(f"The dealers final hand value is {dealer.count}")
+        print(f"The dealers final hand value is {dealer_hand.count}")
         # evaluate result and ask to play again
         # check for either person bust and add or remove tokens respectively
         for hand in player.hands:
 
-            if hand.bust:
-                print("You have lost the game.")
-                player.tokens -= hand.bet * hand.bet_multiplier
-                player.lost += 1
-            elif dealer_hand.bust:
+
+            if dealer_hand.bust:
                 print("Congratulations! You win.")
                 player.tokens += hand.bet * hand.bet_multiplier
                 player.won += 1
