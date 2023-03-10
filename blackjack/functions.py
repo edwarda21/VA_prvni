@@ -9,6 +9,18 @@ STARTING_TOKENS = 20
 BASE_TOKENS = 12
 
 
+def can_split(hand):
+    output = False
+    if len(hand.contents) == 2:
+        if hand.contents[0]["value"] in ["J", "Q", "K"] and hand.contents[1]["value"] in ["J", "Q", "K"]:
+            output = True
+        elif hand.contents[0]["value"] == hand.contents[1]["value"]:
+            output = True
+        else:
+            output = False
+    return output
+
+
 def payout(player, hand, win=True):
     # give the player their bet back
     player.tokens += hand.bet
@@ -343,7 +355,7 @@ def game(player, no_of_decks=6):
 
                     double_down = "or (D)ouble down" if (
                             len(hand.contents) == 2 and hand.bet <= player.tokens) else ""
-                    split = "or s(P)lit" if (len(hand.contents) == 2) else ""
+                    split = "or s(P)lit" if (can_split(hand) and hand.bet <= player.tokens) else ""
                     # gives player info on their hand
 
                     print(f"Dealers hand: \n {write_hand(dealer_hand)}")
@@ -414,7 +426,7 @@ def game(player, no_of_decks=6):
                 player.won += 1
 
             # checks for draw or win on blackjack
-            elif dealer_hand.count == 21 or hand.count == 21:
+            elif dealer_hand.blackjack or hand.blackjack:
                 if hand.blackjack and not dealer_hand.blackjack:
                     print("Congratulations! You win the game with a blackjack.")
                     player.won += 1
