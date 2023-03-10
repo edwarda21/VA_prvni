@@ -9,6 +9,14 @@ STARTING_TOKENS = 20
 BASE_TOKENS = 12
 
 
+def payout(player, hand, win=True):
+    # give the player their bet back
+    player.tokens += hand.bet
+    # give the player the reward
+    if win:
+        player.tokens += hand.bet * hand.bet_multiplier
+
+
 def get_decks(in_number_of_decks):
     values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     colours = ["♥", "♣", "♠", "♦"]
@@ -27,15 +35,12 @@ def find_ace(in_hand):
     return False
 
 
-def write_hand(player):
-    output = f"{player.nick}s hand(s):\n"
-
-    for i, hand in enumerate(player.hands):
-        output += "-" * 15 + f"Hand no. {i}" + "-" * 15 + "\n"
-        for card in hand.contents:
-            output += f"\t{card['value']} of {card['colour']} \n"
-        output += "-" * 30 + "\n"
-    output += "-" * 60 + "\n"
+def write_hand(hand):
+    output = f"Hand:\n"
+    output += "-" * 30 + "\n"
+    for i, card in enumerate(hand.contents):
+        output += f"{i}.\t{card['value']} of {card['colour']} \n"
+    output += "-" * 30 + "\n"
     return output
 
 
@@ -118,12 +123,18 @@ class Hand:
         self.bust = False
         self.contents = []
         self.count = 0
+        self.played = False
         self.bet = bet
         self.parent_player = player
         self.parent_player.tokens -= self.bet
 
-    def draw_card(self, in_deck):
-        card = in_deck.pop()
+    def draw_card(self, in_deck, card=None):
+        # allows for optional 'drawing' of a predefined card if needed, keeps consistency of conditions and updates made
+        # to the hand
+        if card is None:
+            card = in_deck.pop()
+
+        # checks if the value of the card is an integer, if not then sets value to value of the corresponding card
         try:
             self.count += int(card["value"])
         except ValueError:
@@ -135,6 +146,7 @@ class Hand:
             else:
                 self.count += 11
         finally:
+            # adds card to hand and checks for hand value, if needed it strips off 10 points for an ace or goes bust
             self.contents.append(card)
             if self.count > 21:
                 if find_ace(self.contents):
@@ -142,7 +154,8 @@ class Hand:
                     return True
                 else:
                     self.bust = True
-                    print(f"Sorry, you have gone bust, you have lost {self.bet*self.bet_multiplier}")
+                    self.played = True
+                    print(f"Sorry, you have gone bust, you have lost {self.bet * self.bet_multiplier} tokens")
                     print(f"The card you last drew was a {self.contents[-1]['value']}")
                     self.parent_player.lost += 1
                     self.parent_player.hands.remove(self)
@@ -153,6 +166,7 @@ class Hand:
     def check_blackjack(self):
         if self.count == 21 and len(self.contents) == 2:
             self.blackjack = True
+            self.played = True
             self.bet_multiplier = 1.5
             return True
 
@@ -160,19 +174,23 @@ class Hand:
         if self.bet is None:
             return False
         else:
-            self.bet_multiplier *= 2
             self.parent_player.tokens -= self.bet
+            self.bet *= 2
             self.draw_card(in_deck)
+            self.played = True
             return False if self.bust else True
 
     def split(self, in_deck):
+        # removes current hand from the player and equalizes the tokens removed from player
         self.parent_player.hands.remove(self)
+        self.parent_player.tokens += self.bet
+        # created a new hand and adds it to the player, 'drawing' a card that was in the previous hand and a new one
         for i in range(2):
             card = self.contents.pop()
             if card["value"] == "A":
                 card["type"] == "soft"
             hand = Hand(self.parent_player, self.bet)
-            hand.contents.append(card)
+            hand.draw_card(in_deck, card)  # sets the card to be 'drawn'
             hand.draw_card(in_deck)
             self.parent_player.hands.append(hand)
 
@@ -288,7 +306,7 @@ def game(player, no_of_decks=6):
     while playing:
         # sets turn loops to true and gets cards for the dealer and player
         dealer_turn = True
-
+        player_turn = True
         # set player bet or show respective error
         while True:
             try:
@@ -309,56 +327,66 @@ def game(player, no_of_decks=6):
         dealer_hand = dealer.hands[0]
         # starts players turn
         # TODO: fix what hands are getting currently played, maybe by breaking for loop that is withing a while loop
-        for i, hand in enumerate(player.hands):
-            print(player.hands)
-            print(f"CURRENT: {hand}\n index:{i}")
-            turn = True
-            while turn:
-                player_decision = True
-                player_action = None
+        while player_turn:
+            rerun = False
+            for i, hand in enumerate(player.hands):
+                if rerun:
+                    break
+                if hand == player.hands[-1]:
+                    player_turn = False
+                if hand.played:
+                    continue
+                turn = True
+                while turn:
+                    player_decision = True
+                    player_action = None
 
-                double_down = "or (D)ouble down" if (
-                        len(hand.contents) == 2 and player.bet <= player.tokens / 2) else ""
-                split = "or s(P)lit" if (len(hand.contents) == 2) else ""
-                # gives player info on their hand
-                print(write_hand(dealer))
-                print(f"The value of your hand is {hand.count}")
+                    double_down = "or (D)ouble down" if (
+                            len(hand.contents) == 2 and hand.bet <= player.tokens) else ""
+                    split = "or s(P)lit" if (len(hand.contents) == 2) else ""
+                    # gives player info on their hand
 
-                print(write_hand(player))
-                # check for player blackjack
-                if hand.check_blackjack():
-                    print("BLACKJACK! You now have a great chance of winning")
-                    turn = False
-                    continue
-                # get player action, if it is one of the actions allowed continue on, otherwise keep asking for action
-                while player_decision:
-                    player_action = input(f"Do you want to (H)it, (S)tand {double_down} {split}?\n =>")
-                    if len(player_action) > 0 and player_action.lower()[0] in ["h", "s", "d" if double_down else None,
-                                                                               "p" if split else None]:
-                        player_decision = False
-                # evaluate player actions
-                if player_action == "s":
-                    turn = False
-                    continue
-                elif player_action == "d":
-                    # if player doubles down, and they go bust they lose and lose their bet respectively otherwise they
-                    # go on
-                    if hand.double_down(deck):
-                        print(f"Your double down card is a {hand[-1]['value']}")
-                    turn = False
-                    continue
-                elif player_action == "p":
-                    hand.split(deck)
-                    turn = False
-                elif not hand.draw_card(deck):
-                    # last possible option of action, checks if player has gone bust
-                    # the draw card function automatically tells the player the hand has gone bust and removes the hand
-                    turn = False
-                    continue
-                else:
-                    # players hasn't gone bust so ask for action again
-                    continue
-        print(f"final player hand is\n {write_hand(player)}")
+                    print(f"Dealers hand: \n {write_hand(dealer_hand)}")
+                    print(f"The value of your hand is {hand.count}")
+
+                    print(write_hand(hand))
+                    # check for player blackjack
+                    if hand.check_blackjack():
+                        print("BLACKJACK! You now have a great chance of winning")
+                        turn = False
+                        continue
+                    # get player action, if it is one of the actions allowed continue on, otherwise keep asking for action
+                    while player_decision:
+                        player_action = input(f"Do you want to (H)it, (S)tand {double_down} {split}?\n =>")
+                        if len(player_action) > 0 and player_action.lower()[0] in ["h", "s",
+                                                                                   "d" if double_down else None,
+                                                                                   "p" if split else None]:
+                            player_decision = False
+                    # evaluate player actions
+                    if player_action == "s":
+                        turn = False
+                        hand.played = True
+                        continue
+                    elif player_action == "d":
+                        # if player doubles down, and they go bust they lose and lose their bet respectively otherwise they
+                        # go on
+                        if hand.double_down(deck):
+                            print(f"Your double down card is a {hand.contents[-1]['value']}")
+                        turn = False
+                        continue
+                    elif player_action == "p":
+                        hand.split(deck)
+                        turn = False
+                        rerun = player_turn = True
+                    elif not hand.draw_card(deck):
+                        # last possible option of action, checks if player has gone bust
+                        # the draw card function automatically tells the player the hand has gone bust and removes the hand
+                        turn = False
+                        continue
+                    else:
+                        # players hasn't gone bust so ask for action again
+                        continue
+                print(f"The final hand state is\n {write_hand(hand)}")
         dealer_hand.draw_card(deck)
         while dealer_turn:
             # dealers game
@@ -370,22 +398,19 @@ def game(player, no_of_decks=6):
             # if dealer has count less than 17 they draw a card
             elif dealer_hand.count <= 16:
                 if not dealer_hand.draw_card(deck):
-                    print(f"The dealer has gone bust their final hand is\n {write_hand(dealer)}")
+                    print(f"The dealer has gone bust their final hand is\n {write_hand(dealer_hand)}")
                     dealer_turn = False
                     continue
             else:
                 dealer_turn = False
                 continue
-        print(f"The dealers final hand is\n {write_hand(dealer)}")
+        print(f"The dealers final hand is\n {write_hand(dealer_hand)}")
         print(f"The dealers final hand value is {dealer_hand.count}")
         # evaluate result and ask to play again
-        # check for either person bust and add or remove tokens respectively
         for hand in player.hands:
-
-
             if dealer_hand.bust:
                 print("Congratulations! You win.")
-                player.tokens += hand.bet * hand.bet_multiplier
+                payout(player, hand)
                 player.won += 1
 
             # checks for draw or win on blackjack
@@ -393,25 +418,25 @@ def game(player, no_of_decks=6):
                 if hand.blackjack and not dealer_hand.blackjack:
                     print("Congratulations! You win the game with a blackjack.")
                     player.won += 1
-                    player.tokens += hand.bet * hand.bet_multiplier
+                    payout(player, hand)
                 elif dealer_hand.blackjack and not hand.blackjack:
                     print("You have lost the game.")
                     player.lost += 1
-                    player.tokens -= hand.bet * hand.bet_multiplier
                 else:
                     print("Unlucky, the game ended in a draw.")
+                    payout(player, hand, False)
 
             # evaluates rest of options
             elif hand.count > dealer_hand.count:
                 print("Congratulations! You win.")
-                player.tokens += hand.bet * hand.bet_multiplier
+                payout(player, hand)
                 player.won += 1
             elif hand.count == dealer_hand.count:
                 print("Unlucky, the game ended in a draw.")
+                payout(player, hand, False)
             else:
                 print("You have lost the game.")
                 player.lost += 1
-                player.tokens -= hand.bet * hand.bet_multiplier
 
         # give player default 10 tokens if drop to 0
         if player.tokens <= 0:
