@@ -13,9 +13,11 @@ meat_rarity = ("rare", "medium rare", "medium", "well-done")
 vegies = ("Tomato", "Salad", "Cucumber", "Onion")
 cheese = ("American", "Cheddar")
 sauce = ("Ketchup", "Mayonnaise", "Mustard", "Chilli")
-buns = ("Black", "White")
+buns = ("White","Black", "White")
 # frames for different menus
 form = tk.Frame(bg="red")
+burger = tk.Frame(bg="black")
+
 meat_menu = tk.Frame(master=form)
 cheese_menu = tk.Frame(master=form)
 vegie_menu = tk.Frame(master=form)
