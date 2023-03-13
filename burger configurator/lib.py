@@ -12,18 +12,18 @@ img_paths = {"veal": "veal.png",
 
 
 def create_burger(elements, burger_frame, main_frame):
+    main_frame.pack_forget()
     burger_name = ttk.Label(master=burger_frame, text=f"{elements['name'][0].get()}")
     bun_type = elements["bun"][0].get().lower()
     bun_top_img = Image.open(f"{image_root}{bun_type}_top.png")
     bun_bot_img = Image.open(f"{image_root}{bun_type}_bottom.png")
     bun_top_img = ImageTk.PhotoImage(bun_top_img)
     bun_bot_img = ImageTk.PhotoImage(bun_bot_img)
-    top_lbl = tk.Label(burger_win,image=bun_top_img)
-    bot_lbl = tk.Label(burger_win,image=bun_bot_img)
+    top_lbl = ttk.Label(master=burger_frame, image=bun_top_img)
+    bot_lbl = ttk.Label(master=burger_frame, image=bun_bot_img)
     top_lbl.pack()
     bot_lbl.pack()
-
-    burger_win.mainloop()
+    burger_frame.pack()
 
 
 def add_elements(frame, values, text="", list_of_elements=[]):
