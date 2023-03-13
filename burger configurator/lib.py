@@ -5,35 +5,6 @@ import tkinter as tk
 image_root = "./images/"
 
 
-def create_burger(elements, burger_frame, main_frame):
-    global images
-    categories = ["vegies", "cheese", "sauce", "meat"]
-    images = []
-    main_frame.pack_forget()
-    burger_name = ttk.Label(master=burger_frame, text=f"{elements['name'][0].get()}")
-    bun_type = elements["bun"][0].get().lower()
-    bun_top_img = Image.open(f"{image_root}{bun_type}_top.png")
-    bun_bot_img = Image.open(f"{image_root}{bun_type}_bottom.png")
-    bun_top_img = ImageTk.PhotoImage(bun_top_img)
-    bun_bot_img = ImageTk.PhotoImage(bun_bot_img)
-    top_bun = tk.Label(master=burger_frame, image=bun_top_img)
-    top_bun.grid()
-    for cat in categories:
-        for element in elements[cat]:
-            print(f"{image_root}{element.get().lower()}.png")
-            img = Image.open(f"{image_root}{element.get().lower()}.png")
-            img = ImageTk.PhotoImage(img)
-            lbl = tk.Label(master=burger_frame, image=img)
-            images.append(img)
-            lbl.grid
-    bot_lbl = ttk.Label(master=burger_frame, image=bun_bot_img)
-    burger_name.grid()
-    bot_lbl.grid()
-    burger_frame.pack()
-    images.append(bun_top_img)
-    images.append(bun_bot_img)
-
-
 def add_elements(frame, values, text="", list_of_elements=[]):
     lbl = ttk.Label(master=frame, text=text + f":")
     cmb = ttk.Combobox(master=frame, values=values)
