@@ -162,7 +162,7 @@ def create_player():
         in_name = input(
             '''Well hello player, what will your nickname be? (at least 3 characters long with at least 1 letter)
             \n =>''')
-        if len(in_name) >= 3 and not in_name.isspace() and " " not in in_name and re.fullmatch('[^a-zA-Z0-9_-]', in_name):
+        if len(in_name) >= 3 and not in_name.isspace() and " " not in in_name and not re.fullmatch('[^a-zA-Z0-9_-]', in_name):
             if check_player_exists(in_name, player_list):
                 print("Sorry, this username is already taken, try choosing something else.")
             else:
