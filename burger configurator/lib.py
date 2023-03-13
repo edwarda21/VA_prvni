@@ -1,5 +1,5 @@
 import tkinter.ttk as ttk
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageEnhance
 import tkinter as tk
 
 image_root = "./images/"
@@ -16,7 +16,6 @@ def add_elements(frame, values, text="", list_of_elements=[]):
     cmb.current(0)
     cmb.grid(row=frame.grid_size()[1] + 1, column=col)
     list_of_elements.append(cmb)
-    print(cmb.grid_info())
 
 
 class Burger:
@@ -30,14 +29,28 @@ class Burger:
         self.get_images()
         self.show_burger()
 
+    def __del__(self):
+        print("Burger has been deleted")
     def get_images(self):
         for category in self.inputs:
             self.images[category] = []
-            for user_input in self.inputs[category]:
+            for i,user_input in enumerate(self.inputs[category]):
+                darkness = 1
                 if category == "bun":
                     continue
+                if category == "meat":
+                    rarity = self.inputs["rarity"][i].get()
+                    if rarity == "medium":
+                        darkness = 0.6
+                    elif rarity == "well-done":
+                        darkness = 0.3
+                    else:
+                        darkness = 1
                 try:
+
                     img = Image.open(f"{image_root}{user_input.get().lower()}.png")
+                    img = ImageEnhance.Brightness(img)
+                    img = img.enhance(darkness)
                     img = ImageTk.PhotoImage(img)
                     self.images[category].append(img)
                 except FileNotFoundError:
@@ -65,3 +78,14 @@ class Burger:
         self.frame.pack()
         top_lbl.image = top_bun
         bot_lbl.image = bot_bun
+        back_btn = ttk.Button(master=self.frame,command=self.go_back,text="Go Back")
+        back_btn.pack()
+
+    def go_back(self):
+        self.frame.pack_forget()
+        self.main_frame.pack()
+        # runs through all widgets in frame and destroys them
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+        self.__del__()
+

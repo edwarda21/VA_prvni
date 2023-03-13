@@ -9,7 +9,7 @@ window.winfo_height()
 elements = {"meat": [], "rarity": [], "vegies": [], "cheese": [], "bun": [], "sauce": [], "name":[]}
 # TODO: create form GUI
 meat_options = ("chicken", "beef", "veal", "pork")
-meat_rarity = ("rare", "medium rare", "medium", "well-done")
+meat_rarity = ("rare", "medium", "well-done")
 vegies = ("Tomato", "Salad", "Cucumber", "Onion")
 cheese = ("American", "Cheddar")
 sauce = ("Ketchup", "Mayonnaise", "Mustard", "Chilli")
