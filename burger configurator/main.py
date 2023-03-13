@@ -3,11 +3,10 @@ import tkinter.ttk as ttk
 from lib import *
 
 window = tk.Tk()
-window.title("Hello")
-window.winfo_height()
+window.title("Burger Configurator")
 
 elements = {"meat": [], "rarity": [], "vegies": [], "cheese": [], "bun": [], "sauce": [], "name":[]}
-# TODO: create form GUI
+# set all options for comboboxes
 meat_options = ("chicken", "beef", "veal", "pork")
 meat_rarity = ("rare", "medium", "well-done")
 vegies = ("Tomato", "Salad", "Cucumber", "Onion")
@@ -18,6 +17,7 @@ buns = ("White", "Black")
 form = tk.Frame(bg="red")
 burger = tk.Frame(bg="black")
 
+# create frames for all the widgets
 meat_menu = tk.Frame(master=form)
 cheese_menu = tk.Frame(master=form)
 vegie_menu = tk.Frame(master=form)
@@ -25,6 +25,7 @@ sauce_menu = tk.Frame(master=form)
 bun_menu = tk.Frame(master=form)
 name_menu = tk.Frame(master=form)
 burger = tk.Frame()
+# create form widgets
 name_lbl = ttk.Label(master=name_menu, text="Burger name:")
 name_ent = ttk.Entry(master=name_menu)
 elements["name"].append(name_ent)
@@ -51,7 +52,7 @@ add_elements(vegie_menu, vegies, "Vegetables", elements["vegies"])
 add_elements(cheese_menu, cheese, "Cheese", elements["cheese"])
 add_elements(sauce_menu, sauce, "Sauce", elements["sauce"])
 submit_btn = ttk.Button(master=form, text="Create My Burger", command=lambda: Burger(name_ent.get(), elements, burger, form))
-
+# show all widgets
 name_menu.grid(padx=10, pady=10, ipadx=5, ipady=5)
 bun_menu.grid(padx=10, pady=10, ipadx=5, ipady=5)
 meat_menu.grid(padx=10, pady=10, ipadx=5, ipady=5)
