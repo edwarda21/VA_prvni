@@ -6,14 +6,14 @@ window = tk.Tk()
 window.title("Hello")
 window.winfo_height()
 
-elements = {"meat": [], "rarity": [], "vegies": [], "cheese": [], "bun": [], "sauce": [], "name": []}
+elements = {"meat": [], "rarity": [], "vegies": [], "cheese": [], "bun": [], "sauce": [], "name": [], "sesame":None}
 # TODO: create form GUI
 meat_options = ("chicken", "beef", "veal", "pork")
 meat_rarity = ("rare", "medium rare", "medium", "well-done")
 vegies = ("Tomato", "Salad", "Cucumber", "Onion")
 cheese = ("American", "Cheddar")
 sauce = ("Ketchup", "Mayonnaise", "Mustard", "Chilli")
-buns = ("White","Black", "White")
+buns = ("White", "Black")
 # frames for different menus
 form = tk.Frame(bg="red")
 burger = tk.Frame(bg="black")
@@ -32,7 +32,11 @@ name_lbl.grid()
 name_ent.grid()
 
 add_elements(bun_menu, buns, "Bun", elements["bun"])
-
+sesame_lbl = ttk.Label(master=bun_menu, text="Sesame seeds:")
+sesame = ttk.Checkbutton(master=bun_menu, onvalue=1, offvalue=0)
+elements["sesame"] = sesame
+sesame_lbl.grid(row=4,column=1, sticky="W")
+sesame.grid(row=4,column=2, sticky="E")
 add_meat_btn = ttk.Button(master=meat_menu, text="Add meat",
                           command=lambda: [add_elements(meat_menu, meat_options, text="Meat",
                                                         list_of_elements=elements["meat"]),
@@ -50,7 +54,7 @@ add_elements(meat_menu, meat_rarity, "", elements["rarity"])
 add_elements(vegie_menu, vegies, "Vegetables", elements["vegies"])
 add_elements(cheese_menu, cheese, "Cheese", elements["cheese"])
 add_elements(sauce_menu, sauce, "Sauce", elements["sauce"])
-submit_btn = ttk.Button(master=form, text="Create My Burger", command=lambda:create_burger(elements))
+submit_btn = ttk.Button(master=form, text="Create My Burger", command=lambda: create_burger(elements))
 
 name_menu.grid(padx=10, pady=10, ipadx=5, ipady=5)
 bun_menu.grid(padx=10, pady=10, ipadx=5, ipady=5)
