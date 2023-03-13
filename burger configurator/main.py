@@ -24,7 +24,6 @@ vegie_menu = tk.Frame(master=form)
 sauce_menu = tk.Frame(master=form)
 bun_menu = tk.Frame(master=form)
 name_menu = tk.Frame(master=form)
-
 name_lbl = ttk.Label(master=name_menu, text="Burger name:")
 name_ent = ttk.Entry(master=name_menu)
 elements["name"].append(name_ent)

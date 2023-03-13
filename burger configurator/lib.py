@@ -1,7 +1,8 @@
 import tkinter.ttk as ttk
 import tkinter as tk
-import PIL as pil
-image_root = "images/"
+from PIL import Image, ImageTk
+import os
+image_root = "./images/"
 img_paths = {"veal": "veal.png",
              "chicken": "chicken.png",
              "beef": "beef.png",
@@ -10,11 +11,17 @@ img_paths = {"veal": "veal.png",
              }
 
 
-def create_burger(elements):
-    burger_win = tk.Tk()
-    burger_win.title(elements["name"][0].get())
-    bun_top_img = pil.Image.open(f"{image_root}{elements['bun']}_top.png")
-    bun_bot_img = pil.Image.open(f"{image_root}{elements['bun']}_bottom.png")
+def create_burger(elements, burger_frame, main_frame):
+    burger_name = ttk.Label(master=burger_frame, text=f"{elements['name'][0].get()}")
+    bun_type = elements["bun"][0].get().lower()
+    bun_top_img = Image.open(f"{image_root}{bun_type}_top.png")
+    bun_bot_img = Image.open(f"{image_root}{bun_type}_bottom.png")
+    bun_top_img = ImageTk.PhotoImage(bun_top_img)
+    bun_bot_img = ImageTk.PhotoImage(bun_bot_img)
+    top_lbl = tk.Label(burger_win,image=bun_top_img)
+    bot_lbl = tk.Label(burger_win,image=bun_bot_img)
+    top_lbl.pack()
+    bot_lbl.pack()
 
     burger_win.mainloop()
 
