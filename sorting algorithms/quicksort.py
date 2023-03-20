@@ -21,4 +21,4 @@ def quicksort(to_sort):
         return quicksort(to_sort[:pivot_index]) + [to_sort[pivot_index]] + quicksort(to_sort[pivot_index + 1:])
 
 
-print(quicksort([8, 849, 48, 1, 7, 97, 0, 54, 23, 12, 69]))
+#print(quicksort([8, 849, 48, 1, 7, 97, 0, 54, 23, 12, 69]))
