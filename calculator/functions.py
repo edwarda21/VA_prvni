@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter.ttk import *
+import logging
 
-
+logging.basicConfig(level = logging.DEBUG, format = "%(levelname)s - %(message)s")
 def string_difference(string1, string2):
     length = min(len(string1), len(string2))
 
@@ -18,8 +19,7 @@ def string_difference(string1, string2):
 
 class Calculator:
     def __init__(self, window):
-        self.answer = None
-        self.memory = None
+        self.answer = ""
         self.window = window
         self.layout = [
             ["AC", "Ans", "x²", "/"],
@@ -28,12 +28,10 @@ class Calculator:
             ["1", "2", "3", "*"],
             ["0", ".", "=", "√x"]
         ]
-        self.operations = {
+        self.operators = {
             "+": "+",
             "-": "-",
             "*": "*",
-            "x²": "(x**2)",
-            "√x": "(x**(1/2))",
             "/": "/",
 
         }
@@ -42,9 +40,14 @@ class Calculator:
             "Ans",
             "="
         ]
+        self.functions = {
+            "x²": "(x**2)",
+            "√x": "(x**(1/2))",
+        }
         self.main = Frame()
         self.entry_b = None
         self.equation = []
+        self.current_expression = []
 
     def build(self):
         # entry box for equation
@@ -63,29 +66,62 @@ class Calculator:
         btn_frame.pack(pady=15)
 
     def btn_press(self, btn):
+        # check what the value sent to the function is and use the respective function for it
         if btn.isdigit():
-            self.entry_b.insert(END, btn)
-        else:
-            self.get_last_expression(btn)
+            self.add_number(btn)
+        elif btn in self.operators:
+            self.add_operator(btn)
+        elif btn in self.functions:
+            self.use_function(btn)
+        elif btn in self.actions:
+            if btn == "=":
+                self.evaluate()
+            elif btn == "AC":
+                self.clear_all()
+            elif btn == "Ans":
+                self.get_answer()
+        #self.get_last_expression(btn)
 
-    def get_last_expression(self, operator):
-        ent_box_eq = self.entry_b.get()
-        # get difference between stored equation and entry box equation
-        diff = string_difference("".join(self.equation), ent_box_eq)
-        if diff != '' or ent_box_eq[-1] == ")":
-            # remove the length of the difference from the entry box value
-            append = []
-            if "x" in self.operations[operator] and diff != '':
-                to_remove = len(diff)
-                ent_box_eq = ent_box_eq[:-to_remove]
-                append = [self.operations[operator].replace("x", diff, 1)]
-                ent_box_eq += "".join(append)
+    def evaluate(self):
+        logging.info("EVALUATE RUNNING")
+        equation = "".join(self.equation+self.current_expression)
+        self.answer = eval(equation)
+        self.clear_all()
+        self.entry_b.insert(0, self.answer)
 
+    def clear_all(self):
+        logging.info("CLEAR ALL RUNNING")
+        self.entry_b.delete(0, END)
+        self.equation = []
+        self.current_expression = []
 
-            if "x" not in self.operations[operator]:
-                append = [diff, operator]
-                ent_box_eq += operator
+    def add_number(self, number):
+        logging.info("ADD NUMBER RUNNING")
+        self.current_expression.append(number)
+        self.entry_b.insert(END, number)
+
+    def add_operator(self, operator):
+        logging.info("ADD OPERATOR RUNNING")
+        if len(self.current_expression) > 0:
+                self.equation.append([''.join(self.current_expression), operator])
+                self.current_expression = []
+                self.entry_b.insert(END, operator)
+
+    def use_function(self, function):
+        logging.info("USE FUNCTION RUNNING")
+        if len(self.current_expression) > 0:
+            logging.debug("CURRENT EXPRESSION IS LONGER THAN 0")
+            expression = self.functions[function].replace("x", "".join(self.current_expression))
+            logging.debug(f"THE CURRENT EXPRESSION AFTER USING THE FUNCTION IS: {expression}")
+            # remove the current expression from entry box and replace with new function
+            len_to_delete = len("".join(self.current_expression))
+            entry_box_text = self.entry_b.get()[:-len_to_delete]
+            entry_box_text += "".join(expression)
+            # update the entry box text to the new expression
+            self.current_expression = [expression]
             self.entry_b.delete(0, END)
-            self.entry_b.insert(0, ent_box_eq)
+            self.entry_b.insert(0, entry_box_text)
 
-            self.equation += append
+
+    def get_answer(self):
+        logging.info("GET MEMORY RUNNING")
