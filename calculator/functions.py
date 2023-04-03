@@ -68,20 +68,24 @@ class Calculator:
         else:
             self.get_last_expression(btn)
 
-
-    def get_last_expression(self, value):
+    def get_last_expression(self, operator):
         ent_box_eq = self.entry_b.get()
         # get difference between stored equation and entry box equation
         diff = string_difference("".join(self.equation), ent_box_eq)
-        print(f"STORED EQUATION: {self.equation}")
-        print(f"ENTRY BOX EQUATION: {self.entry_b.get()}")
-        print(f"DIFFERENCE:{diff}")
-        print(f"TO ADD:{diff+value}")
-        if diff != '':
-            if "x" in self.operations[value]:
-                append = self.operations[value].replace("x", diff,1)
-            else:
-                append = [diff, value]
+        if diff != '' or ent_box_eq[-1] == ")":
+            # remove the length of the difference from the entry box value
+            append = []
+            if "x" in self.operations[operator] and diff != '':
+                to_remove = len(diff)
+                ent_box_eq = ent_box_eq[:-to_remove]
+                append = [self.operations[operator].replace("x", diff, 1)]
+                ent_box_eq += "".join(append)
 
-            self.entry_b.insert(END, self.operations[value].replace("x", diff,1))
+
+            if "x" not in self.operations[operator]:
+                append = [diff, operator]
+                ent_box_eq += operator
+            self.entry_b.delete(0, END)
+            self.entry_b.insert(0, ent_box_eq)
+
             self.equation += append
